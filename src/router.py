@@ -1,0 +1,32 @@
+from pipelines.audio_pipeline import run_audio_pipeline
+# from pipelines.image_pipeline import run_image_pipeline
+# from pipelines.pdf_pipeline import run_pdf_pipeline
+# from pipelines.text_pipeline import run_text_pipeline
+
+def process_file(uploaded_file):
+    mime_type = uploaded_file.type.lower()
+
+    if mime_type.startswith("audio/"):
+        return run_audio_pipeline(uploaded_file)
+
+    if mime_type.startswith("image/"):
+        return run_image_pipeline(uploaded_file)
+
+    if mime_type == "application/pdf":
+        return run_pdf_pipeline(uploaded_file)
+
+    if mime_type.startswith("text/"):
+        return run_text_pipeline(uploaded_file)
+
+    # fallback by extension
+    ext = uploaded_file.name.split(".")[-1].lower()
+    if ext in {"mp3","wav","m4a"}:
+        return run_audio_pipeline(uploaded_file)
+    if ext in {"jpg","jpeg","png"}:
+        return run_image_pipeline(uploaded_file)
+    if ext == "pdf":
+        return run_pdf_pipeline(uploaded_file)
+    if ext in {"txt","md"}:
+        return run_text_pipeline(uploaded_file)
+
+    raise ValueError("Unsupported file type")
