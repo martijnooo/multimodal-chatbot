@@ -13,4 +13,4 @@ def list_documents(user_id):
         return c.fetchall()
 
 if __name__ == "__main__":
-    list_documents("user1")
+    print(list_documents("user1"))
