@@ -33,9 +33,9 @@ def run_audio_pipeline(uploaded_file, progress_text=None, progress_bar=None):
         add_time_chunk(
             user_id="user1",
             source=uploaded_file.name,
-            start=ch["start"],
-            end=ch["end"],
-            text=ch["text"]
+            start_time=ch["start"],
+            end_time=ch["end"],
+            content=ch["text"]
         )
     if progress_bar: progress_bar.progress(100)
     if progress_text: progress_text.text("Done!")
