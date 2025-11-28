@@ -4,47 +4,32 @@ from processing.summarize import create_summary
 from rag.base import upload_records, ensure_index
 from rag.build_records import create_summary_record, create_chunk_records
 from data_storage.add_document import add_document
+import logging
 
-def run_audio_pipeline(uploaded_file):
-    # 1. Whisper transcription
+logger = logging.getLogger(__name__)
+logger.setLevel(logging.INFO)
+
+def run_audio_pipeline(uploaded_file, progress_text=None, progress_bar=None):
+    if progress_text: progress_text.text("Transcribing audio...")
     transcript = process_audio(uploaded_file)
+    if progress_bar: progress_bar.progress(30)
 
-    # 2. Chunking for RAG use
+    if progress_text: progress_text.text("Chunking audio...")
     chunks = chunk_by_time(transcript.segments)
+    if progress_bar: progress_bar.progress(60)
 
-    # 3. Optional summary
+    if progress_text: progress_text.text("Creating summary...")
     summary = create_summary(transcript.text)
+    if progress_bar: progress_bar.progress(80)
 
-    index_name = "chatbot"
-    namespace = "ns1"
-    user_id = "user1"
-    source = uploaded_file.name.lower()
-    file_type = uploaded_file.type.lower()
-
-    # 1. Ensure index exists
-    index = ensure_index(index_name)
-
-    chunk_records = create_chunk_records(
-            chunks=chunks,
-            user_id=user_id,
-            source=source,
-            type_= file_type
-        )
-
-    # 3. Upload chunks
-    upload_records(index, namespace, chunk_records)
-
-    summary_records = create_summary_record(
-            summary_text=summary,
-            user_id=user_id,
-            source=source,
-            type_= file_type
-        )
-
-    upload_records(index, namespace, summary_records)
-
-    # 4. Store document info in document storage
-    add_document(user_id, source, file_type, summary)
+    if progress_text: progress_text.text("Uploading data...")
+    # Upload chunks & summary
+    index = ensure_index("chatbot")
+    upload_records(index, "ns1", create_chunk_records(chunks, "user1", uploaded_file.name, uploaded_file.type))
+    upload_records(index, "ns1", create_summary_record(summary, "user1", uploaded_file.name, uploaded_file.type))
+    add_document("user1", uploaded_file.name, uploaded_file.type, summary)
+    if progress_bar: progress_bar.progress(100)
+    if progress_text: progress_text.text("Done!")
 
     return {
         "type": "audio",
@@ -52,4 +37,5 @@ def run_audio_pipeline(uploaded_file):
         "source": uploaded_file.name,
         "duration": transcript.duration
     }
+
 
