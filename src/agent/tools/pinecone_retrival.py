@@ -11,13 +11,22 @@ def retrival(
     index=None,
     top_k: int = 5,
 ):
-    """Search the user documents storage for records matching the query.
-    
+    """
+    Semantic search through the user-uploaded documents.
+
+    Use this when the user asks meaning-based questions like:
+    - "What did the document say about neural networks?"
+    - "What was mentioned about customer satisfaction after minute 10?"
+    - "Find references to topic X."
+
+    Do NOT use this for time-based questions such as:
+    - "What is said at 8 minutes?" → Use time_based_retrieval instead.
+
     Args:
-        query: Search terms to look for. Must be a non-empty string.
-        start_constraint: In case of a video or audio file, when the transcript starts in seconds
-        end_constraint: In case of a video or audio file, when the transcript ends in seconds
-        source: The name of the file 
+        query: Meaning-based search term. Must NOT be empty.
+        start_constraint: Optional metadata filter (seconds).
+        end_constraint: Optional metadata filter (seconds).
+        source: Optional file name filter.
     """
     hits = pinecone_retrieval_raw(
         query=query,
