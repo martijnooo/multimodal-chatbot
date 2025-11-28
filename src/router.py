@@ -3,11 +3,11 @@ from pipelines.audio_pipeline import run_audio_pipeline
 # from pipelines.pdf_pipeline import run_pdf_pipeline
 # from pipelines.text_pipeline import run_text_pipeline
 
-def process_file(uploaded_file):
+def process_file(uploaded_file, progress_text=None, progress_bar=None):
     mime_type = uploaded_file.type.lower()
 
     if mime_type.startswith("audio/"):
-        return run_audio_pipeline(uploaded_file)
+        return run_audio_pipeline(uploaded_file, progress_text=progress_text, progress_bar=progress_bar)
 
     if mime_type.startswith("image/"):
         return run_image_pipeline(uploaded_file)
