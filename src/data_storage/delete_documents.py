@@ -16,4 +16,4 @@ def clear_all_documents():
 
 
 if __name__ == "__main__":
-    clear_all_documents()
+    print(clear_all_documents())

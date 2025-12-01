@@ -6,11 +6,12 @@ from rag.build_records import create_summary_record, create_chunk_records
 from data_storage.add_document import add_document
 from data_storage.chunks import add_time_chunk
 import logging
+import uuid
 
-logger = logging.getLogger(__name__)
-logger.setLevel(logging.INFO)
 
 def run_audio_pipeline(uploaded_file, progress_text=None, progress_bar=None):
+    doc_uuid = str(uuid.uuid4())
+
     if progress_text: progress_text.text("Transcribing audio...")
     transcript = process_audio(uploaded_file)
     if progress_bar: progress_bar.progress(30)
@@ -26,15 +27,15 @@ def run_audio_pipeline(uploaded_file, progress_text=None, progress_bar=None):
     if progress_text: progress_text.text("Uploading data...")
     # Upload chunks & summary
     index = ensure_index("chatbot")
-    upload_records(index, "ns1", create_chunk_records(chunks, "user1", uploaded_file.name, uploaded_file.type))
-    upload_records(index, "ns1", create_summary_record(summary, "user1", uploaded_file.name, uploaded_file.type))
-    add_document("user1", uploaded_file.name, uploaded_file.type, summary)
+    upload_records(index, "ns1", create_chunk_records(chunks, "user1", uploaded_file.name, uploaded_file.type, doc_uuid))
+    upload_records(index, "ns1", create_summary_record(summary, "user1", uploaded_file.name, uploaded_file.type, doc_uuid))
+    add_document("user1", uploaded_file.name, uploaded_file.type, summary, doc_uuid)
     for ch in chunks:
         add_time_chunk(
             user_id="user1",
-            source=uploaded_file.name,
-            start_time=ch["start"],
-            end_time=ch["end"],
+            document_uuid=doc_uuid,
+            start_sec=ch["start"],
+            end_sec=ch["end"],
             content=ch["text"]
         )
     if progress_bar: progress_bar.progress(100)
@@ -44,7 +45,9 @@ def run_audio_pipeline(uploaded_file, progress_text=None, progress_bar=None):
         "type": "audio",
         "summary": summary,
         "source": uploaded_file.name,
-        "duration": transcript.duration
+        "duration": transcript.duration,
+        "uuid": doc_uuid
+
     }
 
 

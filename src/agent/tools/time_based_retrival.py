@@ -3,7 +3,7 @@ from data_storage.chunks import get_chunks_around_timestamp
 
 
 @tool
-def time_based_retrieval(source: str, center: int, window: int = 60, user_id: str = "user1"):
+def time_based_retrieval(document_uuid: str, center: int, window: int = 60, user_id: str = "user1"):
     """
     Retrieve transcript content based ONLY on time ranges.
 
@@ -16,14 +16,14 @@ def time_based_retrieval(source: str, center: int, window: int = 60, user_id: st
     It simply returns all chunks whose intervals intersect with [start_time, end_time].
 
     Args:
-        source: The file name of the uploaded audio/video.
+        document_uuid : The file uuid of the uploaded audio/video.
         center: Requested time (seconds).
         window: time window in seconds around the center to search for. Can be adjusted to larger values to have higher chance of a hit.
     """
-    chunks = get_chunks_around_timestamp(user_id, source, center, window)
+    chunks = get_chunks_around_timestamp(user_id, document_uuid, center, window)
 
     if not chunks:
-        return f"No content found around {center} seconds in '{source}'."
+        return f"No content found around {center} seconds in '{document_uuid}'."
 
     result = f"Content around {center} seconds:\n\n"
     for start, end, text in chunks:

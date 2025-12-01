@@ -6,6 +6,7 @@ def pinecone_retrieval_raw(
     start_constraint: int = None,
     end_constraint: int = None,
     source: str = None,
+    document_uuid: str = None,
     namespace: str = "ns1",
     index=None,
     top_k: int = 5,
@@ -24,6 +25,8 @@ def pinecone_retrieval_raw(
         pinecone_filter["end"] = {"$lte": end_constraint}
     if source is not None:
         pinecone_filter["source"] = source
+    if document_uuid is not None:
+        pinecone_filter["document_uuid "] = document_uuid 
 
     # Ensure query is non-empty
     query_text = query or " "

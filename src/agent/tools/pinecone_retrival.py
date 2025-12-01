@@ -7,6 +7,7 @@ def retrival(
     start_constraint: int = None,
     end_constraint: int = None,
     source: str = None,
+    document_uuid: str = None,
     namespace: str = "ns1",
     index=None,
     top_k: int = 5,
@@ -26,13 +27,15 @@ def retrival(
         query: Meaning-based search term. Must NOT be empty.
         start_constraint: Optional metadata filter (seconds).
         end_constraint: Optional metadata filter (seconds).
-        source: Optional file name filter.
+        source: Optional document name filter.
+        document_uuid : Optional document uuid filter.
     """
     hits = pinecone_retrieval_raw(
         query=query,
         start_constraint=start_constraint,
         end_constraint=end_constraint,
         source=source,
+        document_uuid=document_uuid ,
         namespace=namespace,
         index=index,
         top_k=top_k,
@@ -51,7 +54,7 @@ def retrival(
             meta_info.append(f"pages {fields['pages']}")
 
         formatted_output += (
-            f"Match {i} with score {match._score}, {', '.join(meta_info)}:\n"
+            f"Match {i} with score {round(float(match._score),2)} from {fields["source"]}, {', '.join(meta_info)}:\n"
             f"{fields.get('text', '[no text available]')}\n"
         )
 

@@ -6,7 +6,7 @@ PINECONE = os.getenv('PINECONE')
 from pinecone import Pinecone
 
 def ensure_index(
-    index_name: str,
+    index_name: str = "chatbot",
     model_name: str = "llama-text-embed-v2",
     cloud: str = "aws",
     region: str = "us-east-1",

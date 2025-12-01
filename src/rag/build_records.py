@@ -6,7 +6,8 @@ def create_chunk_records(
     user_id: str,
     source: str,
     type_: str,
-    chunk_prefix: str = "chunk"
+    doc_uuid,
+    chunk_prefix: str = "chunk"    
 ) -> List[Dict]:
     """
     Generic chunk -> Pinecone record builder.
@@ -20,7 +21,8 @@ def create_chunk_records(
             "user": user_id,
             "text": chunk.get("text"),
             "source": source,
-            "type": type_
+            "type": type_,
+            "document_uuid": doc_uuid
         }
 
         # include any metadata that exists
@@ -43,7 +45,8 @@ def create_summary_record(
     summary_text: str,
     user_id: str,
     source: str,
-    type_: str
+    type_: str,
+    doc_uuid: str
 ) -> List[Dict]:
     """Create a summary document for Pinecone."""
     return [
@@ -52,6 +55,7 @@ def create_summary_record(
             "user": user_id,
             "text": summary_text,
             "source": source,
-            "type": type_
+            "type": type_,
+            "document_uuid": doc_uuid
         }
     ]

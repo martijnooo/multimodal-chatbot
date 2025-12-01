@@ -1,16 +1,20 @@
+from agent.prompt_templates import base_system_prompt
+
 def run_query_with_memory(agent, prompt, memory_id, file_context):
     messages = []
 
-    # Add dynamic context as assistant message if available
+     # Inject file metadata as a system-level memory block
     if file_context:
-        file_input = (
-            "A new document has been uploaded.\n"
-            f"- Type: {file_context['type']}\n"
-            f"- Source: {file_context['source']}\n"
-            f"- Summary: {file_context['summary']}\n"
-            "You may use the `retrival` tool to explore more details."
-        )
-        messages.append({"role": "assistant", "content": file_input})
+        context_block = base_system_prompt + "New files have been uploaded:\n\n"
+        for file in file_context:
+            context_block += (
+                f"File: {file['source']}\n"
+                f"Type: {file['type']}\n"
+                f"Summary: {file['summary']}\n"
+                "Use the tools 'retrival' or 'time_based_retrieval' to access details.\n\n"
+            )
+        
+        messages.append({"role": "system", "content": context_block})
 
     # Add user query
     messages.append({"role": "user", "content": prompt})

@@ -11,7 +11,7 @@ def list_user_documents(user_id: str = "user1"):
         return "No documents found for this user."
     
     output = []
-    for name, doc_type, summary, upload_time in docs:
-        output.append(f"- {name} ({doc_type}) | {upload_time}: {summary}")
+    for uuid, name, doc_type, summary, upload_time in docs:
+        output.append(f"- uuid: {uuid} - Source: {name} ({doc_type}) | {upload_time}: {summary}")
     
     return "\n".join(output)
