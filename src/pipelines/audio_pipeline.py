@@ -9,8 +9,7 @@ import logging
 import uuid
 
 
-def run_audio_pipeline(uploaded_file, progress_text=None, progress_bar=None):
-    doc_uuid = str(uuid.uuid4())
+def run_audio_pipeline(uploaded_file, doc_uuid, progress_text=None, progress_bar=None):
 
     if progress_text: progress_text.text("Transcribing audio...")
     transcript = process_audio(uploaded_file)

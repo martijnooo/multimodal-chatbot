@@ -1,11 +1,9 @@
-from agent.prompt_templates import base_system_prompt
-
 def run_query_with_memory(agent, prompt, memory_id, file_context):
     messages = []
 
      # Inject file metadata as a system-level memory block
     if file_context:
-        context_block = base_system_prompt + "New files have been uploaded:\n\n"
+        context_block = "New files have been uploaded:\n\n"
         for file in file_context:
             context_block += (
                 f"File: {file['source']}\n"
