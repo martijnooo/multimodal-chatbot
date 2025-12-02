@@ -1,7 +1,8 @@
 from PyPDF2 import PdfReader
 from data_storage.add_document import add_document
-from data_storage.chunks import add_page_chunk
 from processing.summarize import create_summary
+from rag.base import upload_records, ensure_index
+from rag.build_records import create_chunk_records
 import logging
 from io import BytesIO
 from PyPDF2 import PdfReader
@@ -27,13 +28,13 @@ def run_pdf_pipeline(uploaded_file, file_uuid, progress_text=None, progress_bar=
             "page": i + 1,
             "text": text
         })
-        # Store page in SQLite
-        add_page_chunk(user_id="user1", document_uuid=file_uuid, page=i+1, content=text)
-    
     
     full_text = "\n".join([p["text"] for p in page_chunks])
     summary = create_summary(full_text)
     
+    index = ensure_index("chatbot")
+    upload_records(index, "ns1", create_chunk_records(page_chunks, "user1", uploaded_file.name, uploaded_file.type, file_uuid))
+
     # Add document info
     add_document(user_id="user1", name=uploaded_file.name, type_=uploaded_file.type, summary=summary, document_uuid=file_uuid)
     

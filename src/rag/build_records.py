@@ -17,7 +17,7 @@ def create_chunk_records(
 
     for i, chunk in enumerate(chunks):
         base = {
-            "_id": f"{user_id}-{chunk_prefix}-{i}",
+            "_id": f"{doc_uuid}-{chunk_prefix}-{i}",
             "user": user_id,
             "text": chunk.get("text"),
             "source": source,
