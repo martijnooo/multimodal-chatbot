@@ -5,8 +5,7 @@ from rag.base import upload_records, ensure_index
 from rag.build_records import create_summary_record, create_chunk_records
 from data_storage.add_document import add_document
 from data_storage.chunks import add_time_chunk
-import logging
-import uuid
+
 
 
 def run_audio_pipeline(uploaded_file, doc_uuid, progress_text=None, progress_bar=None):
