@@ -75,3 +75,50 @@ def chunk_by_length(text, max_length=1000):
         })
 
     return chunks
+
+def chunk_by_length_pdf(pages_text, max_length=1200):
+    """
+    pages_text: list of (page_number, text)
+    Ensures no empty chunks and keeps page ranges.
+    """
+    chunks = []
+    current_chunk = ""
+    start_page = None
+    end_page = None
+
+    for page_num, text in pages_text:
+
+        if not text.strip():
+            continue  # skip empty pages
+
+        if not current_chunk:
+            start_page = page_num
+            end_page = page_num
+
+        # Check if adding this page fits
+        if len(current_chunk) + len(text) + 2 <= max_length:
+            current_chunk += text + "\n\n"
+            end_page = page_num
+        else:
+            # Store finished chunk
+            chunks.append({
+                "text": current_chunk.strip(),
+                "start_page": start_page,
+                "end_page": end_page,
+            })
+
+            # Start a new chunk
+            current_chunk = text + "\n\n"
+            start_page = page_num
+            end_page = page_num
+
+    # Add last non-empty chunk
+    if current_chunk.strip():
+        chunks.append({
+            "text": current_chunk.strip(),
+            "start_page": start_page,
+            "end_page": end_page,
+        })
+
+    return chunks
+

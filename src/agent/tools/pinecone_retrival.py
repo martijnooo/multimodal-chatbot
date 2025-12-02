@@ -24,7 +24,7 @@ def retrival(
     - "What is said at 8 minutes?" → Use time_based_retrieval instead.
 
     Args:
-        query: Meaning-based search term. Must NOT be empty.
+        query: Meaning-based search term. Must NOT be empty. This needs to be a query for semantic meaning and not a general on like: "Briefly summarize what this document is about, including the type of document, period covered, etc."
         start_constraint: Optional metadata filter (seconds).
         end_constraint: Optional metadata filter (seconds).
         source: Optional document name filter.
