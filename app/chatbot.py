@@ -1,15 +1,6 @@
 import streamlit as st
 import os
 
-# --- Imports (Assuming these are correct and available) ---
-from router import process_file
-from agent.create import setup_agent
-from agent.queries import run_query_with_memory
-from data_storage.list_documents import list_documents
-from router import delete_file
-from processing.audio import generate_audio 
-# --------------------------------------------------------
-
 # ----------------- Environment Setup -----------------
 try:
     os.environ["LANGSMITH_TRACING"] = st.secrets["langsmith"]["tracing"]
@@ -20,6 +11,30 @@ try:
 except KeyError as e:
     st.error(f"Missing required secret: {e}. Please check your `secrets.toml`.")
     st.stop()
+
+# --- Imports  ---
+from router import process_file
+from agent.create import setup_agent
+from agent.queries import run_query_with_memory
+from data_storage.list_documents import list_documents
+from router import delete_file
+from processing.audio import generate_audio 
+import logging
+
+# ----------------- Logging Setup -----------------
+logger = logging.getLogger("chatbot")
+logger.setLevel(logging.DEBUG)
+
+# Only add a handler if none exists (prevents multiple logs on rerun)
+if not logger.hasHandlers():
+    console_handler = logging.StreamHandler()
+    formatter = logging.Formatter(
+        '%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+    )
+    console_handler.setFormatter(formatter)
+    logger.addHandler(console_handler)
+
+logger.debug("Logger initialized successfully.")
 
 
 # ----------------- Initialize Agent and Session State -----------------
@@ -40,11 +55,11 @@ if "audio_enabled" not in st.session_state:
 
 st.title("💡 Multimodal Chatbot")
 
-# --- Sidebar for File Management and Configuration (REVISED) ---
+# --- Sidebar for File Management and Configuration ---
 with st.sidebar:
     st.header("⚙️ Configuration")
 
-    # 1. AUDIO TOGGLE (New Feature)
+    # 1. AUDIO TOGGLE
     # Checkbox state is automatically managed by Streamlit's session state
     st.session_state.audio_enabled = st.checkbox(
         "🔊 Enable Audio Responses", 
@@ -54,7 +69,7 @@ with st.sidebar:
     
     st.markdown("---")
     
-    # 2. FILE MANAGEMENT (Existing)
+    # 2. FILE MANAGEMENT
     st.header("🗃️ File Management")
 
     docs = list_documents("user1")
@@ -70,7 +85,7 @@ with st.sidebar:
             doc_data, 
             column_order=("File Name", "Uploaded On", "ID"),
             hide_index=True,
-            use_container_width=True,
+            width="stretch",
             column_config={
                 "ID": st.column_config.TextColumn("ID", disabled=True),
                 "File Name": st.column_config.TextColumn("File Name", width="medium"),
@@ -84,6 +99,7 @@ with st.sidebar:
                 try:
                     delete_file(doc_to_delete)
                     st.success(f"Document ID '{doc_to_delete}' deleted.")
+                    logger.info(f"Deleted document {doc_to_delete} ")
                     st.rerun()
                 except Exception as e:
                     st.error(f"Error deleting file: {e}")
@@ -148,7 +164,7 @@ if prompt := st.chat_input("Ask something or upload files to chat...", accept_fi
         # 4. Display assistant response
         message_placeholder.markdown(answer)
 
-        # 5. Conditional Text-to-Speech Implementation (REVISED LOGIC)
+        # 5. Conditional Text-to-Speech Implementation 
         if st.session_state.audio_enabled:
             st.caption("🔊 Generating audio...")
             try:
