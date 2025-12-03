@@ -2,7 +2,7 @@ def chunk_by_time(segments, chunk_size=45, overlap=10):
     chunks = []
     stride = chunk_size - overlap
 
-    end_of_audio = segments[-1].end
+    end_of_audio = segments[-1]["end"]
     t = 0
 
     while t < end_of_audio:
@@ -12,8 +12,8 @@ def chunk_by_time(segments, chunk_size=45, overlap=10):
         # collect all text covered by this window
         texts = []
         for seg in segments:
-            if seg.end >= chunk_start and seg.start <= chunk_end:
-                texts.append(seg.text.strip())
+            if seg["end"] >= chunk_start and seg["start"] <= chunk_end:
+                texts.append(seg["text"].strip())
 
         if texts:
             chunks.append({

@@ -7,6 +7,7 @@ def run_query_with_memory(agent, prompt, memory_id, file_context):
         for file in file_context:
             context_block += (
                 f"File: {file['source']}\n"
+                f"UUID: {file['uuid']}\n"
                 f"Type: {file['type']}\n"
                 f"Summary: {file['summary']}\n"
                 "Use the tools 'retrival' or 'time_based_retrieval' to access details.\n\n"

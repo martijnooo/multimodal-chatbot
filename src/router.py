@@ -1,9 +1,8 @@
 from pipelines.audio_pipeline import run_audio_pipeline
-# from pipelines.image_pipeline import run_image_pipeline
 from pipelines.pdf_pipeline import run_pdf_pipeline
 from pipelines.text_pipeline import run_text_pipeline
 from rag.delete import delete_pinecone_records
-from data_storage.delete_recods import delete_document, delete_chunks
+from data_storage.delete_recods import delete_document
 import logging
 import uuid
 
@@ -36,5 +35,4 @@ def delete_file(uuid):
     logger.info(f"Deleting file {uuid}...")
     delete_pinecone_records(uuid)
     delete_document(uuid)
-    delete_chunks(uuid)
     logger.info(f"File {uuid} deleted successfully.")

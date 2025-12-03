@@ -22,7 +22,7 @@ def retrival(
     - If everything is empty → return warning.
 
     Args:
-        query: Meaning-based search term. In case of metadata only search, leave empty
+        query: Meaning-based search term. In case of metadata only search, leave empty. When used, the query must contain meaning for semantic search and can't be used for general queries on the document such as "summarise the content".
         start_constraint: Optional metadata filter (seconds).
         end_constraint: Optional metadata filter (seconds).
         source: Optional document name filter.
