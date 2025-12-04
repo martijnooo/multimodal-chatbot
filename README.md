@@ -2,18 +2,19 @@
 
 This project is a **multimodal AI chatbot** built with **Streamlit**, **LangChain/LangGraph-style agents**, **Pinecone RAG**, **Whisper transcription**, **SQLite document registry**, and **LangSmith tracing**. It supports:
 
-* Audio file ingestion
+* Audio, text and pdf  multi-file ingestion
 * Automatic transcription (Whisper)
 * Chunking & summarization for RAG
 * Pinecone vector storage & retrieval
 * Time-based queries on audio
+* Page-based queries for text
 * Multi-turn memory via thread IDs
 * Per-user document registry using SQLite
 * A clean Streamlit UX
 
 ---
 
-## 🚀 Features
+## 🚀 Key Features
 
 ### 🔊 Audio Processing Pipeline
 
@@ -29,8 +30,7 @@ When a user uploads an audio file (`mp3`, `wav`, `m4a`):
 ### 📚 Retrieval (RAG)
 
 * Vector search using **Pinecone**
-* Supports **metadata filters** (start time, end time, source)
-* Supports **full-text queries**
+* Supports **metadata filters** (start time, end time, page, source)
 * Metadata-only queries use a neutral placeholder vector
 
 ### 🧠 Multi-turn Memory
@@ -60,41 +60,56 @@ Custom tools allow the agent to:
 
 ---
 
+## 🪧 Demo
+--> Click image
+[![Multimodal Chatbot Demo](interface.jpg)](https://app.guidde.com/share/playbooks/5PZSB4AHr22j7N51dTsMKi?origin=1PiE387AxNZmNhZQ5XHK5q8jKcw2)
+
+---
+
 ## 📁 Project Structure
 
 ```
-app/
-│
-├── app.py                     # Streamlit UI
-├── router.py                  # File routing based on mime type
-│
-├── pipelines/
-│   ├── audio_pipeline.py      # Full audio → RAG processing pipeline
-│   ├── image_pipeline.py
-│   ├── pdf_pipeline.py
-│   └── text_pipeline.py
-│
-├── processing/
-│   ├── audio.py               # Whisper transcription
-│   ├── chunking.py            # Time-based chunking
-│   └── summarize.py           # Summary LLM calls
-│
-├── rag/
-│   ├── base.py                # Pinecone setup + uploads
-│   ├── build_records.py       # Chunk + summary record builders
-│   └── retrival.py            # Retrieval functions + tools
-│
-├── agent/
-│   ├── create.py              # Setup of the main agent
-│   └── queries.py             # Memory-aware query execution
-│
-├── data_storage/
-│   ├── add_document.py        # Insert row into SQLite
-│   └── list_documents.py      # Tool for agent to list user documents
-│
-└── database/
-    ├── documents.db           # SQLite file
-    └── init.sql               # Optional schema
+├── app/
+│   ├── .streamlit/
+│   │   ├── config.toml
+│   │   └── secrets.toml
+│   └── chatbot.py          # Main streamlit app
+├── data/                   # SQLLite database for document registry
+│   └── user_data/
+│       ├── documents.db
+│       └── setup.ipynb
+└── src/
+    ├── __init__.py
+    ├── router.py
+    ├── agent/              # Agent setup including tools, query and templates
+    │   ├── __init__.py
+    │   ├── create.py
+    │   ├── prompt_templates.py
+    │   ├── queries.py
+    │   └── tools/
+    │       ├── pinecone_retrival.py
+    │       └── sql_retrival.py
+    ├── data_storage/       # Interaction with SQLLite database
+    │   ├── add_document.py
+    │   ├── delete_documents.py
+    │   ├── delete_recods.py
+    │   └── list_documents.py
+    ├── pipelines/          # Orchestrator pipelines for uploaded input
+    │   ├── __init__.py
+    │   ├── audio_pipeline.py
+    │   ├── pdf_pipeline.py
+    │   └── text_pipeline.py
+    ├── processing/         # Processing functions for uploaded input
+    │   ├── __init__.py
+    │   ├── audio.py
+    │   ├── chunking.py
+    │   └── summarize.py
+    └── rag/                # Pinecone interaction for storing and retrival
+        ├── __init__.py
+        ├── base.py
+        ├── build_records.py
+        ├── delete.py
+        └── retrieval.py
 ```
 
 ---
@@ -122,6 +137,10 @@ api_key = "YOUR_LANGSMITH_KEY"
 project = "your-project-name"
 endpoint = "https://api.smith.langchain.com"
 tracing = "true"
+
+[pinecone]
+api_key = "Your_PINECONE_KEY"
+
 ```
 
 ### 3️⃣ Run the app
@@ -132,75 +151,14 @@ streamlit run app.py
 
 ---
 
-## 📡 File Processing Flow
-
-```
-User uploads → router.py → audio_pipeline → Whisper
-              ↓
-              chunking → build records → Pinecone
-              ↓
-              SQLite document registry
-              ↓
-      Chat agent receives contextual system message
-```
-
----
-
-## 🔍 RAG Query Flow
-
-```
-User question → memory-aware query → agent → tools:
-    - pinecone retrival tool
-    - list_documents tool
-
-Responses are enriched using RAG records & summaries.
-```
-
----
-
-## 🧠 Memory Handling
-
-Uses LangChain’s configurable thread IDs:
-
-```python
-agent.invoke({"messages": [...]}, config={"configurable": {"thread_id": "1"}})
-```
-
-This persists state across turns.
-
----
-
-## 🛠 Utilities
-
-### Clearing the local SQLite database
-
-A helper exists to wipe the document registry for debugging.
-
-### Debug Logging
-
-All pipelines include `logger.info()` calls.
-
-LangSmith provides full chain/tool visibility.
-
----
-
 ## 🗺️ Roadmap
 
 * Add login system for per-user persistent documents
-* Add PDF & text pipeline
-* Improve time-based retrieval UX
-* Add agent streaming
-* Add summarization-on-query for long documents
-* Add real user IDs instead of "user1"
+* Add chat history
+
 
 ---
 
 ## 🤝 Contributing
 
 PRs are welcome! If you want help restructuring the code, adding tests, or extending the pipeline, feel free to open an issue.
-
----
-
-## 📄 License
-
-MIT License.
