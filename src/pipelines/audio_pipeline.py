@@ -6,10 +6,13 @@ from rag.build_records import create_chunk_records
 from data_storage.add_document import add_document
 import concurrent.futures
 import logging
+from langsmith import traceable
 
 # Get the shared logger
 logger = logging.getLogger("chatbot")
 
+
+@traceable(name="audio_pipeline")
 def run_audio_pipeline(uploaded_file, doc_uuid, progress_text=None, progress_bar=None):
     if progress_text: progress_text.text("Transcribing audio...")
     logger.info(f"Processing audio file: {uploaded_file.name}")

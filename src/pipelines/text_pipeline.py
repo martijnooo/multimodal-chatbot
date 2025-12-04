@@ -5,10 +5,13 @@ from data_storage.add_document import add_document
 from processing.chunking import chunk_by_length
 from processing.summarize import create_summary
 import logging
+from langsmith import traceable
 
 # Shared logger
 logger = logging.getLogger("chatbot")
 
+
+@traceable(name="text_pipeline")
 def run_text_pipeline(uploaded_file, doc_uuid, progress_text=None, progress_bar=None):
     if progress_text:
         progress_text.text("Reading Word document...")

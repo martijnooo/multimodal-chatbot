@@ -5,10 +5,13 @@ from rag.base import upload_records, ensure_index
 from rag.build_records import create_chunk_records
 import logging
 from io import BytesIO
+from langsmith import traceable
 
 # Shared logger
 logger = logging.getLogger("chatbot")
 
+
+@traceable(name="pdf_pipeline")
 def run_pdf_pipeline(uploaded_file, file_uuid, progress_text=None, progress_bar=None):
     if progress_text: progress_text.text("Reading PDF in-memory...")
     logger.info(f"Processing PDF file: {uploaded_file.name}")

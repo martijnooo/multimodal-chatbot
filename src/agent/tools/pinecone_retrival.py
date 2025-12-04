@@ -1,8 +1,10 @@
 from langchain.tools import tool
 from rag.retrieval import pinecone_retrieval_raw
+from langsmith import traceable
 
 
 @tool
+@traceable(tags=["retrieval_tool"])
 def retrival(
     query: str = None,
     start_constraint: int = None,
